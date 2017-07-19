@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter as Router, Route, HashRouter, Switch } from 'react-router-dom';
 
 class Layout extends React.Component {
   render() {

@@ -6,6 +6,8 @@ import fetch from 'node-fetch';
 import Loading from 'react-loading';
 import './UserStatus.less';
 
+import config from '../../../../config.json'
+
 class UserStatus extends React.Component {
   constructor(props) {
     super(props)
@@ -16,7 +18,7 @@ class UserStatus extends React.Component {
 
  getUsr() {
    this.setState( {response: false} )
-   fetch('http://localhost:8080/api/info', {
+   fetch(config.api + '/info', {
    credentials: 'same-origin'
    })
    .then((result) => result.json())
@@ -29,7 +31,7 @@ class UserStatus extends React.Component {
 
  getEvents() {
    this.setState( {response: false} )
-   fetch('http://localhost:8080/api/getEvents', {
+   fetch(config.api + '/getEvents', {
    credentials: 'same-origin'
    })
    .then((result) => result.json())

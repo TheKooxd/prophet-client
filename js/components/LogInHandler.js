@@ -4,6 +4,7 @@ import { Router, Route, HashRouter, hashHistory } from 'react-router';
 import LogInModal from './modals/LogInModal.js';
 import fetch from 'node-fetch';
 
+import config from '../../config.json'
 
 class LogInHandler extends Component {
 constructor(props) {
@@ -18,21 +19,23 @@ constructor(props) {
 
     loggedIn() {
       this.setState( {response: false} )
-      fetch('http://localhost:8080/api/info', {
+      fetch(config.api + '/info', {
       credentials: 'same-origin'
       })
       .then((result) => result.json())
       .then((result) => {
-          console.log(this.state)
           if (!result.loggedIn) {
             this.setState({ login: true, response: true })
           } else {
               if(this.props.name !== undefined) this.setState({ login: false , response: true})
               else {
-                this.props.renderInfo(result)
+                this.props.renderInfo(result);
               }
             }
 
+      })
+      .catch(function(err){
+        console.log(err)
       });
     }
 

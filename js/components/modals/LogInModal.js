@@ -6,6 +6,8 @@ import AlertPanel from '../alerts/Alert.js';
 
 import LoginPanel from '../panels/LoginPanel.js';
 
+import config from '../../../config.json'
+
 class LogInModal extends React.Component {
   constructor(props) {
     super(props)
@@ -50,17 +52,19 @@ class LogInModal extends React.Component {
          </Modal.Header>
          <Modal.Body>
           {this.props.err == true &&
-            <Alert bsStyle="warning">
-              <Glyphicon glyph="glyphicon-ok" /> You're not logged in currently
+            <Alert bsStyle="info">
+              <Glyphicon glyph="info-sign" /> You're not logged in currently
             </Alert>
           }
           {this.props.loggedOut == true &&
             <Alert bsStyle="success">
-              <Glyphicon glyph="glyphicon-ok" /> Logged out successfully
+              <Glyphicon glyph="ok-sign" /> Logged out successfully
             </Alert>
           }
           {this.state.loginErr == true &&
-          <AlertPanel type="danger" text="Login Failed" />
+            <Alert bsStyle="danger">
+              <Glyphicon glyph="exclamation-sign" /> Login Error
+            </Alert>
           }
            <h4>Enter the credentials provided by your SRK:</h4>
            <LoginPanel handler = {this.handler} />

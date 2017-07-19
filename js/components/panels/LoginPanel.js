@@ -5,6 +5,8 @@ import { Input, FormControl, Button } from 'react-bootstrap';
 import "./LoginPanel.less"
 import fetch from 'node-fetch';
 
+import config from '../../../config.json';
+
 class LoginPanel extends React.Component {
   constructor(props) {
     super(props)
@@ -17,7 +19,7 @@ class LoginPanel extends React.Component {
  }
 
   login() {
-    fetch('http://localhost:8080/api/login?id=' + this.state.usrId + "&pass=" + this.state.pass, {
+    fetch(config.api + '/login?id=' + this.state.usrId + "&pass=" + this.state.pass, {
     credentials: 'same-origin'
     })
   .then((resp) => resp.json())

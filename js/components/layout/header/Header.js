@@ -4,7 +4,6 @@ import {Nav, Navbar, MenuItem, NavItem, NavDropdown, Button} from 'react-bootstr
 import bootstrap from 'bootstrap';
 import {Link} from "react-router";
 import Loading from 'react-loading';
-import ReactPlaceholder from 'react-placeholder';
 import "./Header.less";
 
 import UserBadge from './UserBadge.js';
@@ -38,8 +37,8 @@ class Header extends React.Component {
             </div>
             <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul className="nav navbar-nav">
-                <li className="active"><a href="#">Overview <span className="sr-only">(current)</span></a></li>
-                <li><a href="#">Link</a></li>
+                <li className={this.props.location == "/" && 'active'}><a href="#">Overview</a></li>
+                <li className={this.props.location == "/events" && 'active'}><Link to="events">Events</Link></li>
                 <li className="dropdown">
                   <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span className="caret"></span></a>
                   <ul className="dropdown-menu">
