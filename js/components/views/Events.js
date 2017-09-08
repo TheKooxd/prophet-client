@@ -55,10 +55,12 @@ class Events extends React.Component {
       <div>
         <LogInHandler renderInfo={this.renderInfo} name={this.state.name} />
         <div className="row">
+        {this.state.role == "admin" &&
           <div className="col-md-2">
             <Button href="/#/newEvent" bsStyle="success">New</Button>
             <br/>
           </div>
+        }
         </div>
         <div className="row">
          <div className="col-md-12">

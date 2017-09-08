@@ -1,20 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Button, PageHeader, Nav, NavItem, Tab, Tabs } from 'react-bootstrap';
+import { Button, PageHeader, Nav, NavItem, Tab, Tabs, Modal } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
 
 import EventTable from '../util/tables/EventTable.js'
 import LogInHandler from '../LogInHandler.js';
 import AlertPanel from '../alerts/Alert.js'
 import BasicInfo from './inputs/BasicInfo';
+import UserSelector from './inputs/UserSelector';
+import Overview from './Overview.js';
 
 import config from '../../../config.json'
 
 class newEvent extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { name: undefined, loggedOut: false, ready: false, open: false }
+    this.state = { name: undefined, loggedOut: false, ready: false, open: false, saved: false }
     this.renderInfo = this.renderInfo.bind(this)
+    this.setEvent = this.setEvent.bind(this)
+    this.updateBasic = this.updateBasic.bind(this)
+    this.closeModal = this.closeModal.bind(this)
+    this.data = new Object
  }
 
   renderInfo() {
@@ -36,6 +42,11 @@ class newEvent extends React.Component {
       })
   }
 
+  updateBasic(field, value) {
+    this.data[field] = value;
+    this.setState({data: this.data});
+  }
+
   componentDidMount() {
     this.renderInfo();
   }
@@ -44,10 +55,31 @@ class newEvent extends React.Component {
     this.renderInfo(nextProps.loggedIn);
   }
 
+  setEvent() {
+    console.log(this.state.data)
+      fetch(config.api + '/setEvent?name=' + this.state.data.name + '&startTime=' + this.state.data.starts + '&endTime=' + this.state.data.ends+ '&closes=' + this.state.data.closes+ '&location=' + this.state.data.location+ '&toInnostaja=' + this.state.data.toInnostaja + '&toEVI=' + this.state.data.toEVI + '&toIndividual=false' + '&max=' + this.state.data.max, {
+        credentials: 'same-origin'
+        })
+        .then((result) => result.text())
+        .then((result) => {
+        this.setState({saved: true})
+        })
+  }
+
+ closeModal() {
+    this.setState({saved: false})
+  }
+
   render() {
     if(this.state.ready == false) return(<h1>LOADING</h1>)
     return(
       <div>
+        <Modal show={this.state.saved} bsSize="large" aria-labelledby="contained-modal-title-lg">
+         <Modal.Body>
+         <AlertPanel type="success" text="Event was saved succesfully!" glyph="ok-sign" />
+          <Button bsStyle="info" onClick={this.closeModal}>OK</Button>
+         </Modal.Body>
+       </Modal>
         {this.state.role !== "admin" ? (
           <AlertPanel type="danger" text="You need to be an admin to see this!" glyph="exclamation-sign" />
         ) : (
@@ -63,15 +95,21 @@ class newEvent extends React.Component {
                   <NavItem eventKey="second">
                     Participants
                   </NavItem>
+                  <NavItem eventKey="third">
+                    Overview and saving
+                  </NavItem>
                 </Nav>
                 </div>
                 <div className="col-md-9">
                    <Tab.Content animation>
                       <Tab.Pane eventKey="first">
-                        <BasicInfo />
+                        <BasicInfo updateBasic={this.updateBasic} />
                       </Tab.Pane>
                       <Tab.Pane eventKey="second">
-                        Tab 2 content
+                        <UserSelector updateBasic={this.updateBasic} />
+                      </Tab.Pane>
+                      <Tab.Pane eventKey="third">
+                        <Overview data={this.state.data} setEvent={this.setEvent} />
                       </Tab.Pane>
                     </Tab.Content>
                 </div>
