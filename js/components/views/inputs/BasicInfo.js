@@ -4,9 +4,9 @@ import { FormGroup, ControlLabel, HelpBlock, FormControl } from 'react-bootstrap
 import DatePicker from 'react-datepicker';
 import './react-datepicker.less';
 import moment from 'moment';
-import TimePicker from 'react-bootstrap-time-picker';
 import './jquery.timePicker.min.js';
 import './time-picker.less';
+
 
 class BasicInfo extends React.Component {
   constructor(props) {
@@ -14,9 +14,6 @@ class BasicInfo extends React.Component {
     this.state = { nameValidation: undefined, name: "" , location: "", startTime: moment(), endTime: moment(), closes: moment()}
     this.handleChange = this.handleChange.bind(this)
     this.getValidationState = this.getValidationState.bind(this)
-    this.startDateChange = this.startDateChange.bind(this)
-    this.endDateChange = this.endDateChange.bind(this)
-    this.closesDateChange = this.closesDateChange.bind(this)
     this.startTimeChange = this.startTimeChange.bind(this)
     this.endTimeChange = this.endTimeChange.bind(this)
     this.closesTimeChange = this.closesTimeChange.bind(this)
@@ -37,60 +34,46 @@ class BasicInfo extends React.Component {
     if(e.target.id == "location") {
       this.setState({ location: e.target.value })
     }
-  }
-
-   startDateChange(date) {
-    this.setState({
-      startTime: date
-    });
-  }
-
-   endDateChange(date) {
-    this.setState({
-      endTime: date
-    });
-  }
-
-  closesDateChange(date) {
-    this.setState({
-      closes: date
-    });
+    this.props.updateBasic(e.target.id, e.target.value)
   }
 
   startTimeChange(date) {
-    var temp = this.state.startTime;
-    temp.set({hour:date.target.value.slice(0,5).split(":")[0], minute:date.target.value.slice(0,5).split(":")[1]});
-    console.log(date.target.value.slice(0,5).split(":")[1])
-    console.log(temp.format("DD/MM/YYYY HH:MM"))
-    this.setState({
-      startTime: temp
-    });
+    var d = date.target.value.replace("T", " ").split(" ")
+    d[0] = d[0].split("-")
+    d[1] = d[1].split(":")
+    d[0][1] = (d[0][1] - 1).toString()
+    if((d[0][1]).length == 1) d[0][1] = "0" + d[0][1]
+    var temp = new Date(d[0][0], d[0][1], d[0][2], d[1][0], d[1][1])
+    this.props.updateBasic("starts", temp)
+    this.setState({startTime: temp})
   }
 
    endTimeChange(date) {
-    console.log(date.target.value.slice(0,5).split(":"))
-    var temp = this.state.endTime;
-    temp.set({hour:date.target.value.slice(0,5).split(":")[0], minute:date.target.value.slice(0,5).split(":")[1]}).toDate();
-    console.log(temp)
-    this.setState({
-      endTime: temp
-    });
+    var d = date.target.value.replace("T", " ").split(" ")
+    d[0] = d[0].split("-")
+    d[1] = d[1].split(":")
+    d[0][1] = (d[0][1] - 1).toString()
+    if((d[0][1]).length == 1) d[0][1] = "0" + d[0][1]
+    var temp = new Date(d[0][0], d[0][1], d[0][2], d[1][0], d[1][1])
+    this.setState({endTime: temp})
+    this.props.updateBasic("ends", temp)
+    console.log(this.state.endTime)
   }
 
   closesTimeChange(date) {
-    console.log(date.target.value.slice(0,5).split(":"))
-    var temp = this.state.closes;
-    temp.set({hour:date.target.value.slice(0,5).split(":")[0], minute:date.target.value.slice(0,5).split(":")[1]}).toDate();
-    console.log(temp)
-    this.setState({
-      closes: temp
-    });
+    var d = date.target.value.replace("T", " ").split(" ")
+    d[0] = d[0].split("-")
+    d[1] = d[1].split(":")
+    d[0][1] = (d[0][1] - 1).toString()
+    if((d[0][1]).length == 1) d[0][1] = "0" + d[0][1]
+    var temp = new Date(d[0][0], d[0][1], d[0][2], d[1][0], d[1][1])
+    this.setState({closes: temp})
+    this.props.updateBasic("closes", temp)
+    console.log(this.state.closes)
   }
 
   validateDate(e) {
-    if(e == "start") {
-      console.log(this.state.startTime.hours())
-    }
+    return "success";
   }
 
 
@@ -102,8 +85,6 @@ class BasicInfo extends React.Component {
             controlId="name"
             validationState={this.getValidationState(this.state.name.length)}
           >
-          <input id="time1"/>
-          {$("#time1").timePicker()}
             <ControlLabel>Name of the Event</ControlLabel>
             <FormControl
               type="text"
@@ -135,15 +116,8 @@ class BasicInfo extends React.Component {
                 validationState={this.validateDate("start")}
               >
                 <ControlLabel>Start Time</ControlLabel><br/>
-                <DatePicker
-                  selected={this.state.startTime}
-                  onChange={this.startDateChange}
-                  dateFormat="DD-MM-YY"
-                  placeholderText="Click to select a date"
-                />
-                @
-                <input type="text" size="4" onChange={this.startTimeChange}/>
-                <HelpBlock>"When should I be there?"</HelpBlock> {this.state.startTime.format("DD/MM/YYYY HH:MM")}
+                <input onBlur={this.startTimeChange} type="datetime-local" id="testDate"/>
+                <HelpBlock>"When should I be there?"</HelpBlock>
               </FormGroup>
               </div>
               <div className="col-md-4">
@@ -151,15 +125,8 @@ class BasicInfo extends React.Component {
                   controlId="endTime"
                 >
                   <ControlLabel>End Time</ControlLabel><br/>
-                  <DatePicker
-                    selected={this.state.endTime}
-                    onChange={this.endDateChange}
-                    dateFormat="DD-MM-YY"
-                    placeholderText="Click to select a date"
-                  />
-                  @
-                  <input type="text" size="4" onChange={this.endTimeChange}/>
-                  <HelpBlock>"When can I leave?"</HelpBlock> {this.state.endTime.format("DD/MM/YYYY HH:MM")}
+                  <input onBlur={this.endTimeChange} type="datetime-local" id="testDate"/>
+                  <HelpBlock>"When can I leave?"</HelpBlock>
                 </FormGroup>
               </div>
               <div className="col-md-4">
@@ -167,15 +134,8 @@ class BasicInfo extends React.Component {
                   controlId="closes"
                 >
                   <ControlLabel>Joining Ends</ControlLabel><br/>
-                  <DatePicker
-                    selected={this.state.closes}
-                    onChange={this.closesDateChange}
-                    dateFormat="DD-MM-YY"
-                    placeholderText="Click to select a date"
-                  />
-                  @
-                  <input type="text" size="4" onChange={this.closesTimeChange}/>
-                  <HelpBlock>"When do I have to decide?"</HelpBlock> {this.state.closes.format("DD/MM/YYYY HH:MM")}
+                  <input onBlur={this.closesTimeChange} type="datetime-local" id="testDate"/>
+                  <HelpBlock>"When do I have to decide?"</HelpBlock>
                 </FormGroup>
               </div>
             </div>
