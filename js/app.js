@@ -44,6 +44,7 @@ class App extends Component {
       this.setState({
         name: info.usr.name,
         role: info.usr.role,
+        usrId: info.usr._id,
         loggedOut: true
       })
     }
