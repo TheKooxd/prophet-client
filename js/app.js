@@ -11,6 +11,9 @@ import LogInHandler from './components/LogInHandler.js';
 import Events from './components/views/Events.js';
 import Event from './components/views/Event.js';
 import newEvent from './components/views/newEvent.js';
+import Users from './components/views/Users.js';
+import User from './components/views/User.js';
+import GroupGenerator from './components/views/pages/GroupGenerator.js';
 
 import config from '../config.json'
 
@@ -81,6 +84,9 @@ render(
      <Route path="/events" component={Events}/>
      <Route path="/event/:id" component={Event}/>
      <Route path="/newEvent" component={newEvent}/>
+     <Route path="/users" component={Users}/>
+     <Route path="/user/:id" component={User}/>
+     <Route path="/ggenerator" component={GroupGenerator}/>
     </Route>
   </Router>,
   document.getElementById('react')

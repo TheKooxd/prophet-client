@@ -39,18 +39,19 @@ class Header extends React.Component {
               <ul className="nav navbar-nav">
                 <li className={this.props.location == "/" && 'active'}><a href="#">Overview</a></li>
                 <li className={this.props.location == "/events" && 'active'}><Link to="events">Events</Link></li>
-                <li className="dropdown">
-                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span className="caret"></span></a>
+                {this.props.role == "admin"&&
+                <li className={this.props.location == "/users" && 'active' + " dropdown"}>
+                  <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin area <span className="caret"></span></a>
                   <ul className="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
+                    <li className={this.props.location == "/users" && 'active'}><Link to="users">Users</Link></li>
+                    <li><Link to="ggenerator">Group generator</Link></li>
                     <li role="separator" className="divider"></li>
-                    <li><a href="#">Separated link</a></li>
+                    <li><a href="#">Analytics dashboard</a></li>
                     <li role="separator" className="divider"></li>
-                    <li><a href="#">One more separated link</a></li>
+                    <li><a href="#">Global settings</a></li>
                   </ul>
                 </li>
+                }
               </ul>
               <ul className="nav navbar-nav navbar-right">
                 <NavItem eventKey={1} onClick={this.passLogout}>Logout</NavItem>

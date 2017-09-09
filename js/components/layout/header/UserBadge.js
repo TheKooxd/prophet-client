@@ -8,7 +8,7 @@ class UserBadge extends React.Component {
  render() {
    if(!this.props.name || !this.props.role) return <Loading type={"spin"} color={"grey"} height='2' width='20' />
    return(
-     <div>
+     <div className="text-center" style={{display: 'inline'}}>
      {this.props.onlyBadge !== true &&
        <span>
         Signed in as: <b> {this.props.name + " "} </b>

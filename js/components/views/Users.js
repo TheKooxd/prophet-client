@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import { Table, Button } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
 
-import EventTable from '../util/tables/EventTable.js'
+import UserTable from '../util/tables/UserTable.js'
 import LogInHandler from '../LogInHandler.js';
 import Loading from '../util/Loading.js';
+import AlertPanel from '../alerts/Alert.js';
 
 import config from '../../../config.json'
 
@@ -14,7 +15,7 @@ class Events extends React.Component {
     super(props, context)
     this.state = { name: undefined, loggedOut: false, ready: false, open: false }
     this.renderInfo = this.renderInfo.bind(this)
-    this.getEvents = this.getEvents.bind(this)
+    this.getUsers = this.getUsers.bind(this)
  }
 
   renderInfo(info) {
@@ -27,8 +28,8 @@ class Events extends React.Component {
     }
   }
 
-getEvents() {
-  fetch(config.api + '/getEvents', {
+  getUsers() {
+  fetch(config.api + '/getUsers', {
   credentials: 'same-origin'
   })
   .then((result) => result.json())
@@ -37,54 +38,57 @@ getEvents() {
       this.setState({
         ready: true
       })
-  });
+  })
+  .catch(function() {
+      this.setState({error: true, ready: true})
+    }.bind(this));
 }
 
   componentDidMount() {
     this.renderInfo();
-    this.getEvents();
+    this.getUsers();
   }
 
   componentWillReceiveProps(nextProps){
     this.renderInfo(nextProps.loggedIn);
-    this.getEvents(nextProps);
+    this.getUsers(nextProps);
   }
 
   render() {
-    if(this.state.ready == false) return <Loading />
+    if(this.state.ready == false) return (
+      <Loading />
+    )
     return(
+    <div>
       <div>
         <LogInHandler renderInfo={this.renderInfo} name={this.state.name} />
         <div className="row">
-        {this.state.role == "admin" &&
-          <div className="col-md-2">
-            <Button href="/#/newEvent" bsStyle="success">New</Button>
-            <br/>
-          </div>
-        }
         </div>
         <div className="row">
          <div className="col-md-12">
+           {this.props.location.query.delete == "true" &&
+            <AlertPanel type="success" text="User deleted succesfully!" glyph="ok-sign" />
+            }
           <Table condensed hover>
             <thead>
               <tr>
+                <th>id</th>
                 <th>Name</th>
-                <th>Time</th>
-                <th>Place</th>
-                <th>Expires</th>
-                <th>Slots</th>
+                <th>Role</th>
+                <th>Number of events</th>
               </tr>
             </thead>
             <tbody>
             {this.data.map(function(data, index){
               return(
-                <EventTable index={index} data={data} />
+                <UserTable index={index} data={data} />
               );
             }.bind(this))}
            </tbody>
           </Table>
         </div>
         </div>
+      </div>
       </div>
     )
   }
