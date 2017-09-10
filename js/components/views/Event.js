@@ -133,7 +133,7 @@ class Event extends React.Component {
               </div>
             </div>
             <div className="row">
-              <AdminEvent participants={JSON.parse(this.data.participants)} />
+              <AdminEvent participants={JSON.parse(this.data.participants)} startTime={this.data.startTime} eventId={this.data._id} />
             </div>
           </div>
         )
