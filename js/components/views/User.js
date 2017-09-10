@@ -5,6 +5,7 @@ import Collapsible from 'react-collapsible';
 
 import EventTable from '../util/tables/EventTable.js'
 import UserEvents from './UserEvents.js';
+import UserVerified from './UserVerified.js';
 import LogInHandler from '../LogInHandler.js';
 import AlertPanel from '../alerts/Alert.js';
 import moment from 'moment';
@@ -26,7 +27,7 @@ class Event extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.state = {ready: false, error: false, delete: false, freeze: false, admin: false, nameCheck: false, forceadd: false}
-    this.getEvent = this.getEvent.bind(this)
+    this.getUser = this.getUser.bind(this)
     this.deleteUser = this.deleteUser.bind(this)
     this.freezeUser = this.freezeUser.bind(this)
     this.nameCheckUpdate = this.nameCheckUpdate.bind(this)
@@ -35,8 +36,8 @@ class Event extends React.Component {
     this.closeModal = this.closeModal.bind(this)
  }
 
-  getEvent() {
-    fetch(config.api + '/getUser?id=' + this.props.params.id, {
+  getUser() {
+  fetch(config.api + '/getUser?id=' + this.props.params.id, {
     credentials: 'same-origin'
     })
     .then((result) => result.json())
@@ -58,15 +59,14 @@ class Event extends React.Component {
 
 
   componentDidMount() {
-    this.getEvent();
+    this.getUser();
   }
 
   componentWillReceiveProps(nextProps){
-    this.getEvent(nextProps);
+    this.getUser(nextProps);
   }
 
   deleteUser(){
-    console.log("delete")
     this.setState({delete: true})
   }
 
@@ -87,7 +87,6 @@ class Event extends React.Component {
     if(e.target.value == this.data.name) {
       this.setState({nameCheck: true})
     }
-    console.log(this.state.nameCheck)
   }
 
   freezeUser(){
@@ -109,7 +108,7 @@ class Event extends React.Component {
     return(
       <div>
         {this.state.error == true ? (
-          <AlertPanel type="danger" text="This user doesn't exist, please check the ID!" />
+          <AlertPanel type="danger" text="This user doesn't exist, please check the ID!" glyph="exclamation-sign" />
         ) : (
            <div>
             <Modal show={this.state.delete} bsSize="large" aria-labelledby="contained-modal-title-lg">
@@ -179,6 +178,9 @@ class Event extends React.Component {
             </div>
             <div className="row">
               <UserEvents events={JSON.parse(this.data.events)} />
+            </div>
+             <div className="row">
+              <UserVerified verifiedEvents={JSON.parse(this.data.verifiedEvents)} />
             </div>
           </div>
         )

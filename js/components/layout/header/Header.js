@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Nav, Navbar, MenuItem, NavItem, NavDropdown, Button} from 'react-bootstrap';
+import {Nav, Navbar, MenuItem, NavItem, NavDropdown, Button, Badge} from 'react-bootstrap';
 import bootstrap from 'bootstrap';
 import {Link} from "react-router";
 import Loading from 'react-loading';
@@ -20,6 +20,7 @@ class Header extends React.Component {
   }
 
   render() {
+    console.log(this.props)
     return(
       <div className="test">
         <nav className="navbar navbar-default">
@@ -39,6 +40,7 @@ class Header extends React.Component {
               <ul className="nav navbar-nav">
                 <li className={this.props.location == "/" && 'active'}><a href="#">Overview</a></li>
                 <li className={this.props.location == "/events" && 'active'}><Link to="events">Events</Link></li>
+                <li className={this.props.location == "/myevents" && 'active'}><Link to="myevents">My Events <Badge>{this.props.events}</Badge></Link></li>
                 {this.props.role == "admin"&&
                 <li className={this.props.location == "/users" && 'active' + " dropdown"}>
                   <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin area <span className="caret"></span></a>

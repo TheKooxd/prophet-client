@@ -8,11 +8,11 @@ import Loading from '../util/Loading.js';
 
 import config from '../../../config.json';
 
-class AdminEvent extends React.Component {
+class UserEvents extends React.Component {
 
 constructor(props) {
     super(props)
-    this.state = {readyad: false, admin: false}
+    this.state = {readyad: false}
     this.getEvents = this.getEvents.bind(this)
  }
 
@@ -25,13 +25,10 @@ constructor(props) {
 	    })
 	    .then((result) => result.json())
 	    .then((result) => {
-	    	if(result.events != undefined) {
-	    		this.setState({admin: true})
-	    	}
 	    	this.data[index] = result
-	        if(index + 1 == this.props.events.length) {
-	          this.setState({readyad: true})
-	        }
+	      if(this.data.length == this.props.events.length) {
+	       this.setState({readyad: true})
+	       }
 	    });
 	 }.bind(this))
  }
@@ -45,7 +42,7 @@ constructor(props) {
   }
 
  render() {
- if(this.state.readyad == false) return <Loading />
+  if(this.state.readyad == false) return <Loading />
    return(
      <div className="col-md-12">
      <hr/>
@@ -73,4 +70,4 @@ constructor(props) {
 }
 }
 
-export default AdminEvent;
+export default UserEvents;

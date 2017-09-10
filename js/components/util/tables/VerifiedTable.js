@@ -9,13 +9,14 @@ import moment from 'moment';
 
 import config from '../../../../config.json';
 
-class EventTable extends React.Component {
+class VerifiedTable extends React.Component {
   static contextTypes = {
     router: PropTypes.object.isRequired
   };
 
   constructor(props, context) {
     super(props, context)
+    this.state = {ready: false}
   }
 
   handleClick() {
@@ -31,17 +32,47 @@ class EventTable extends React.Component {
     else this.context.router.push('/event/' + this.props.data._id)
   }
 
+getUser() {
+  fetch(config.api + '/getUser?id=' + this.props.data.verifier, {
+    credentials: 'same-origin'
+    })
+    .then((result) => result.json())
+    .then((result) => {
+        if(result._id == this.props.data.verifier) {
+          this.verifierData = result;
+          this.setState({
+            ready: true
+          })
+        }
+        else {
+          this.setState({error: true, ready: true})
+        }
+    })
+    .catch(function() {
+      this.setState({error: true, ready: true})
+    }.bind(this));
+}
+
+ componentDidMount() {
+    this.getUser();
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.getUser(nextProps);
+  }
+
   render() {
+    if(this.state.ready == false) return <small> Loading user name </small>
     return(
       <tr onClick={this.handleClick.bind(this)}>
       <td key={ this.props.index }>{this.props.data.name}</td>
       <td key={ this.props.index + 1 }>{moment(this.props.data.startTime).format('DD/MM/YYYY')}</td>
       <td key={ this.props.index + 2 }>{this.props.data.location}</td>
-      <td key={ this.props.index + 3 }>{moment(this.props.data.closes).format('DD/MM/YYYY')}</td>
-      <td key={ this.props.index + 4 }>{JSON.parse(this.props.data.participants).length + "/" + this.props.data.max}</td>
+      <td key={ this.props.index + 3 }>{this.props.data.type}</td>
+      <td key={ this.props.index + 4 }>{this.verifierData.name}</td>
       </tr>
     )
   }
 }
 
-export default EventTable;
+export default VerifiedTable;

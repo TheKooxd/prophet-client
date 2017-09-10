@@ -8,12 +8,12 @@ class Loading extends React.Component {
  render() {
    return(
      <div>
-	      <div className="col-md-5"></div>
-		      <div className="col-md-2">
-			      <div style={{width: "100px"}}>
-			      <RingLoader color="grey" size="100px"/>
-		      </div>
-	      </div>
+	   <div className="col-md-5"></div>
+		<div className="col-md-2">
+		  <div style={{width: "100px"}}>
+		    <RingLoader color="grey" size="100px"/>
+		  </div>
+	    </div>
       <div className="col-md-5"></div>
     </div>
   )

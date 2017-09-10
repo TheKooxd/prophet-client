@@ -15,7 +15,7 @@ class Overview extends React.Component {
     console.log(this.props.data)
     if( this.props.data == undefined) return(<AlertPanel glyph="info-sign" type="info" text="You haven't filled all the spots yet." />)
     if(this.props.data != undefined) {
-      if(Object.keys(this.props.data).length < 8) {
+      if(Object.keys(this.props.data).length < 9) {
         return(<AlertPanel glyph="info-sign" type="info" text="You haven't filled all the spots yet." />)
       }
     }
@@ -27,6 +27,8 @@ class Overview extends React.Component {
         Closes: {moment(this.props.data.closes).format('DD/MM/YYYY HH:mm')}
         <br/>
         Location: {this.props.data.location}
+        <br/>
+        Type: {this.props.data.type}
         <br/>
         <Button onClick={this.props.setEvent} bsStyle="success"> Save </Button>
       </div>

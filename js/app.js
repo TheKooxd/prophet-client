@@ -14,6 +14,7 @@ import newEvent from './components/views/newEvent.js';
 import Users from './components/views/Users.js';
 import User from './components/views/User.js';
 import GroupGenerator from './components/views/pages/GroupGenerator.js';
+import MyEvents from './components/views/pages/MyEvents.js';
 
 import config from '../config.json'
 
@@ -48,6 +49,7 @@ class App extends Component {
         name: info.usr.name,
         role: info.usr.role,
         usrId: info.usr._id,
+        events: JSON.parse(info.usr.events).length,
         loggedOut: true
       })
     }
@@ -69,7 +71,7 @@ class App extends Component {
     if(this.state.name == undefined) return <LogInHandler renderInfo={this.renderInfo} name={this.state.name} loggedOut={this.state.loggedOut} />
     return (
     <div className="container">
-      <Header name={this.state.name} role={this.state.role} logout={this.logout} location={this.props.location.pathname} />
+      <Header name={this.state.name} role={this.state.role} logout={this.logout} location={this.props.location.pathname} events={this.state.events} />
       {this.props.children}
     </div>
     );
@@ -87,6 +89,7 @@ render(
      <Route path="/users" component={Users}/>
      <Route path="/user/:id" component={User}/>
      <Route path="/ggenerator" component={GroupGenerator}/>
+     <Route path="/myevents" component={MyEvents}/>
     </Route>
   </Router>,
   document.getElementById('react')

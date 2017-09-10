@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import { Table, Button } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
 
-import EventTable from '../util/tables/EventTable.js'
-import LogInHandler from '../LogInHandler.js';
-import Loading from '../util/Loading.js';
+import EventTable from '../../util/tables/EventTable.js'
+import LogInHandler from '../../LogInHandler.js';
+import Loading from '../../util/Loading.js';
 
-import config from '../../../config.json'
+import config from '../../../../config.json'
 
-class Events extends React.Component {
+class MyEvents extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.state = { name: undefined, loggedOut: false, ready: false, open: false }
@@ -25,31 +25,35 @@ class Events extends React.Component {
         loggedOut: true
       })
     }
-    this.getEvents();
   }
 
 getEvents() {
-  var joinable = true
-  if(this.state.role == "admin") joinable = false
-  fetch(config.api + '/getEvents?onlyJoinable=' + joinable, {
+  fetch(config.api + '/info', {
   credentials: 'same-origin'
   })
-  .then((result) => result.json())
-  .then((result) => {
-      this.data = result;
-      this.setState({
-        ready: true
-      })
+  .then((userInfo) => userInfo.json())
+  .then((userInfo) => {
+    fetch(config.api + '/searchEvents?specific=' + userInfo.usr.events, {
+    credentials: 'same-origin'
+    })
+    .then((result) => result.json())
+    .then((result) => {
+        this.data = result;
+        this.setState({
+          ready: true
+        })
+    });
   });
 }
 
   componentDidMount() {
     this.renderInfo();
-    
+    this.getEvents();
   }
 
   componentWillReceiveProps(nextProps){
     this.renderInfo(nextProps.loggedIn);
+    this.getEvents(nextProps);
   }
 
   render() {
@@ -58,12 +62,6 @@ getEvents() {
       <div>
         <LogInHandler renderInfo={this.renderInfo} name={this.state.name} />
         <div className="row">
-        {this.state.role == "admin" &&
-          <div className="col-md-2">
-            <Button href="/#/newEvent" bsStyle="success">New</Button>
-            <br/>
-          </div>
-        }
         </div>
         <div className="row">
          <div className="col-md-12">
@@ -92,4 +90,4 @@ getEvents() {
   }
 }
 
-export default Events;
+export default MyEvents;
