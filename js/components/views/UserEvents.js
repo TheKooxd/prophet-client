@@ -46,7 +46,7 @@ constructor(props) {
    return(
      <div className="col-md-12">
      <hr/>
-      Events joined: 
+      {this.props.title}
  		<Table condensed hover>
        <thead>
           <tr>

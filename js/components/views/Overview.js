@@ -15,7 +15,7 @@ class Overview extends React.Component {
     console.log(this.props.data)
     if( this.props.data == undefined) return(<AlertPanel glyph="info-sign" type="info" text="You haven't filled all the spots yet." />)
     if(this.props.data != undefined) {
-      if(Object.keys(this.props.data).length < 9) {
+      if(Object.keys(this.props.data).length < this.props.fillSpots) {
         return(<AlertPanel glyph="info-sign" type="info" text="You haven't filled all the spots yet." />)
       }
     }

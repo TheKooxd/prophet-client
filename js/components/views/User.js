@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import { PageHeader, Label, Button, Modal, HelpBlock, SplitButton, MenuItem, FormControl, FormGroup } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
+import _ from 'lodash';
 
 import EventTable from '../util/tables/EventTable.js'
 import UserEvents from './UserEvents.js';
@@ -26,7 +27,7 @@ class Event extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    this.state = {ready: false, error: false, delete: false, freeze: false, admin: false, nameCheck: false, forceadd: false}
+    this.state = {ready: false, error: false, delete: false, freeze: false, admin: false, nameCheck: false, forceadd: false, remaining: 0, data: new Object()}
     this.getUser = this.getUser.bind(this)
     this.deleteUser = this.deleteUser.bind(this)
     this.freezeUser = this.freezeUser.bind(this)
@@ -34,25 +35,51 @@ class Event extends React.Component {
     this.deleteUserSend = this.deleteUserSend.bind(this)
     this.forceaddupdate = this.forceaddupdate.bind(this)
     this.closeModal = this.closeModal.bind(this)
+    this.sum = this.sum.bind(this)
  }
 
   getUser() {
+  console.log(this.props.params.id)
+  this.data = new Object();
+  this.data = {}
+  this.setState({ready: false, error: false, delete: false, freeze: false, admin: false, nameCheck: false, forceadd: false, remaining: 0, data: new Object()})
   fetch(config.api + '/getUser?id=' + this.props.params.id, {
     credentials: 'same-origin'
     })
     .then((result) => result.json())
     .then((result) => {
+        console.log(result._id)
+        console.log(this.props.params.id)
         if(result._id == this.props.params.id) {
           this.data = result;
-          this.setState({
-            ready: true
-          })
+          var remainingCache = result.eventRequirements;
+          if(JSON.parse(result.verifiedEvents).length !== 0) {
+            JSON.parse(result.verifiedEvents).forEach(function(event, index){
+              fetch(config.api + '/getEvent?id=' + event.event, {
+              credentials: 'same-origin'
+              })
+              .then((result2) => result2.json())
+              .then((result2) => {
+                if(remainingCache[result2[0].type] > 0) {
+                  remainingCache[result2[0].type]--;
+                }
+                if(index + 1 == JSON.parse(result.verifiedEvents).length) {
+                  this.setState({ remaining: remainingCache, data: this.data, ready: true })
+                }
+              })
+            }.bind(this))
+          }
+          else {
+            this.setState({remaining: result.eventRequirements, data: this.data, ready: true})
+          }
         }
         else {
-          this.setState({error: true, ready: true})
+          console.log("eka")
+          this.setState({error: false, ready: false})
         }
     })
     .catch(function() {
+      console.log("toka")
       this.setState({error: true, ready: true})
     }.bind(this));
 }
@@ -72,7 +99,7 @@ class Event extends React.Component {
 
   deleteUserSend() {
   if(this.state.nameCheck) {
-    fetch(config.api + '/deleteUser?id=' + this.data._id, {
+    fetch(config.api + '/deleteUser?id=' + this.state.data._id, {
     credentials: 'same-origin'
     })
     .then((result) => result.text())
@@ -83,8 +110,18 @@ class Event extends React.Component {
   }
   }
 
+  sum( obj ) {
+  var sum = 0;
+  for( var el in obj ) {
+    if( obj.hasOwnProperty( el ) ) {
+      sum += parseFloat( obj[el] );
+    }
+  }
+  return sum;
+  }
+
   nameCheckUpdate(e){
-    if(e.target.value == this.data.name) {
+    if(e.target.value == this.state.data.name) {
       this.setState({nameCheck: true})
     }
   }
@@ -99,11 +136,13 @@ class Event extends React.Component {
 
   closeModal(e) {
     if(e == "forceadd") {
-      this.setState({ forceadd: false })
+      this.setState({ forceadd: false, ready: true })
     }
+    this.getUser();
   }
 
   render() {
+    console.log(this.state)
     if(this.state.ready == false) return <Loading />
     return(
       <div>
@@ -135,27 +174,27 @@ class Event extends React.Component {
              <Modal.Footer>
              </Modal.Footer>
            </Modal>
-           <ForceAddModal open={this.state.forceadd} data={this.data} closeModal={this.closeModal} />
+           <ForceAddModal open={this.state.forceadd} data={this.state.data} closeModal={this.closeModal} />
             <div className="col-md-12">
              <PageHeader>
-               {this.data.name + " "} 
+               {this.state.data.name + " "} 
                 <small>
-                  <UserBadge name={this.data.name} onlyBadge={true} role={this.data.role} />
+                  <UserBadge name={this.state.data.name} onlyBadge={true} role={this.state.data.role} />
                 </small>
             </PageHeader>
             </div>
             <div className="row">
               <div className="col-md-6">
                 <div className="text-center col-md-3">
-                <h1 className="text-center">{JSON.parse(this.data.events).length}</h1>
+                <h1 className="text-center">{JSON.parse(this.state.data.events).length}</h1>
                   <h3 className="text-center">Events joined</h3>
                 </div>
                 <div className="text-center col-md-3">
-                 <h1 className="text-center">0</h1>
+                 <h1 className="text-center">{JSON.parse(this.state.data.verifiedEvents).length}</h1>
                   <h3 className="text-center">Events done</h3>
                 </div>
                 <div className="text-center col-md-3">
-                 <h1 className="text-center">0</h1>
+                 <h1 className="text-center">{this.sum(this.state.remaining)}</h1>
                   <h3 className="text-center">Events remaining</h3>
                 </div>
               </div>
@@ -177,10 +216,25 @@ class Event extends React.Component {
               </div>
             </div>
             <div className="row">
-              <UserEvents events={JSON.parse(this.data.events)} />
+            {JSON.parse(this.state.data.events).length == 0 ? (
+                <AlertPanel type="info" text="User hasn't join any events." glyph="info-sign" />
+              ) : (
+              <UserEvents title="Events joined:" events={JSON.parse(this.state.data.events)} />
+            )}
+            </div>
+            <div className="row">
+            {JSON.parse(this.state.data.reservedEvents).length == 0 ? (
+                <AlertPanel type="info" text="User doesn't have any events inline." glyph="info-sign" />
+              ) : (
+              <UserEvents title="Inline events:" events={JSON.parse(this.state.data.reservedEvents)} />
+            )}
             </div>
              <div className="row">
-              <UserVerified verifiedEvents={JSON.parse(this.data.verifiedEvents)} />
+             {JSON.parse(this.state.data.verifiedEvents).length == 0 ? (
+                <AlertPanel type="info" text="User doesn't have any verified events." glyph="info-sign" />
+              ) : (
+              <UserVerified verifiedEvents={JSON.parse(this.state.data.verifiedEvents)} />
+              )}
             </div>
           </div>
         )

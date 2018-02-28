@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import { Button, PageHeader, Nav, NavItem, Tab, Tabs, Modal } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
@@ -13,8 +13,12 @@ import Overview from './Overview.js';
 import config from '../../../config.json'
 
 class newEvent extends React.Component {
-  constructor(props) {
-    super(props)
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
+
+  constructor(props, context) {
+    super(props, context)
     this.state = { name: undefined, loggedOut: false, ready: false, open: false, saved: false }
     this.renderInfo = this.renderInfo.bind(this)
     this.setEvent = this.setEvent.bind(this)
@@ -56,13 +60,13 @@ class newEvent extends React.Component {
   }
 
   setEvent() {
-    console.log(this.state.data)
-      fetch(config.api + '/setEvent?name=' + this.state.data.name + '&startTime=' + this.state.data.starts + '&endTime=' + this.state.data.ends+ '&closes=' + this.state.data.closes+ '&location=' + this.state.data.location+ '&toInnostaja=' + this.state.data.toInnostaja + '&toEVI=' + this.state.data.toEVI + '&toIndividual=false' + '&max=' + this.state.data.max + '&type=' + this.state.data.type, {
+      fetch(config.api + '/setEvent?name=' + this.state.data.name + '&startTime=' + this.state.data.starts + '&endTime=' + this.state.data.ends+ '&closes=' + this.state.data.closes+ '&location=' + this.state.data.location+ '&toInnostaja=' + this.state.data.toInnostaja + '&toEVI=' + this.state.data.toEVI + '&toIndividual=false' + '&max=' + this.state.data.max + '&type=' + this.state.data.type + '&info=' + this.state.data.info, {
         credentials: 'same-origin'
         })
         .then((result) => result.text())
         .then((result) => {
         this.setState({saved: true})
+        this.context.router.push('/events?created=true')
         })
   }
 
@@ -71,7 +75,7 @@ class newEvent extends React.Component {
   }
 
   render() {
-    console.log(this.state.role)
+    console.log(this.context)
     if(this.state.ready == false) return(<h1>LOADING</h1>)
     return(
       <div>
@@ -110,7 +114,7 @@ class newEvent extends React.Component {
                         <UserSelector updateBasic={this.updateBasic} />
                       </Tab.Pane>
                       <Tab.Pane eventKey="third">
-                        <Overview data={this.state.data} setEvent={this.setEvent} />
+                        <Overview data={this.state.data} setEvent={this.setEvent} fillSpots={7} />
                       </Tab.Pane>
                     </Tab.Content>
                 </div>

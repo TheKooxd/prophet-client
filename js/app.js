@@ -14,7 +14,9 @@ import newEvent from './components/views/newEvent.js';
 import Users from './components/views/Users.js';
 import User from './components/views/User.js';
 import GroupGenerator from './components/views/pages/GroupGenerator.js';
+import GlobalSettings from './components/views/pages/GlobalSettings.js';
 import MyEvents from './components/views/pages/MyEvents.js';
+import dashboard from './components/views/pages/dashboard/dashboard.js';
 
 import config from '../config.json'
 
@@ -90,6 +92,8 @@ render(
      <Route path="/user/:id" component={User}/>
      <Route path="/ggenerator" component={GroupGenerator}/>
      <Route path="/myevents" component={MyEvents}/>
+     <Route path="/settings" component={GlobalSettings}/>
+     <Route path="/dashboard" component={dashboard}/>
     </Route>
   </Router>,
   document.getElementById('react')

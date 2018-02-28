@@ -72,8 +72,9 @@ class Events extends React.Component {
           <Table condensed hover>
             <thead>
               <tr>
-                <th>id</th>
+                <th>Group</th>
                 <th>Name</th>
+                <th>Acivated</th>
                 <th>Role</th>
                 <th>Number of events</th>
               </tr>

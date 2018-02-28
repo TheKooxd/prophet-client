@@ -7,21 +7,23 @@ import EventTable from '../../util/tables/EventTable.js'
 import LogInHandler from '../../LogInHandler.js';
 import AlertPanel from '../../alerts/Alert.js'
 import UserGroupInfo from './inputs/UserGroupInfo.js';
-import UserSelector from './../inputs/UserSelector';
-import Overview from './../Overview.js';
+import UserGroupRoles from './inputs/UserGroupRoles.js';
+import GenerateUsers from './inputs/GenerateUsers.js';
+import ProfileOutput from './inputs/ProfileOutput.js';
 
 import config from '../../../../config.json'
 
 class GroupGenerator extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { name: undefined, loggedOut: false, ready: false, open: false, saved: false }
+    this.data = new Object
+    this.data.names = new Array();
+    this.state = { name: undefined, loggedOut: false, ready: false, open: false, saved: false, data: this.data, isGenerating: false }
     this.renderInfo = this.renderInfo.bind(this)
-    this.setEvent = this.setEvent.bind(this)
     this.updateBasic = this.updateBasic.bind(this)
     this.closeModal = this.closeModal.bind(this)
-    this.data = new Object
- }
+    this.generateUsers = this.generateUsers.bind(this)
+   }
 
   renderInfo() {
     fetch(config.api + '/info', {
@@ -32,6 +34,7 @@ class GroupGenerator extends React.Component {
           if (!result.loggedIn) {
             this.setState({ login: true, response: true })
           } else {
+            console.log(result)
               this.setState({
                 name: result.usr.name,
                 role: result.usr.role,
@@ -42,9 +45,24 @@ class GroupGenerator extends React.Component {
       })
   }
 
+  generateUsers() {
+    this.setState({isGenerating: true})
+    fetch(config.api + '/generateGroup?names=' + JSON.stringify(this.state.data.names) + '&role=' + this.state.data.role + '&groupName=' + this.state.data.groupId, {
+    credentials: 'same-origin'
+    })
+    .then((result) => result.json())
+    .then((result) => {
+    var temp = this.state.data
+    temp.profiles = result
+    this.setState({isGenerating: "done", data: temp})
+    console.log(result)
+    })
+  }
+
   updateBasic(field, value) {
     this.data[field] = value;
     this.setState({data: this.data});
+    console.log(this.state.data)
   }
 
   componentDidMount() {
@@ -55,17 +73,6 @@ class GroupGenerator extends React.Component {
     this.renderInfo(nextProps.loggedIn);
   }
 
-  setEvent() {
-    console.log(this.state.data)
-      fetch(config.api + '/setEvent?name=' + this.state.data.name + '&startTime=' + this.state.data.starts + '&endTime=' + this.state.data.ends+ '&closes=' + this.state.data.closes+ '&location=' + this.state.data.location+ '&toInnostaja=' + this.state.data.toInnostaja + '&toEVI=' + this.state.data.toEVI + '&toIndividual=false' + '&max=' + this.state.data.max, {
-        credentials: 'same-origin'
-        })
-        .then((result) => result.text())
-        .then((result) => {
-        this.setState({saved: true})
-        })
-  }
-
  closeModal() {
     this.setState({saved: false})
   }
@@ -74,12 +81,6 @@ class GroupGenerator extends React.Component {
     if(this.state.ready == false) return(<h1>LOADING</h1>)
     return(
       <div>
-        <Modal show={this.state.saved} bsSize="large" aria-labelledby="contained-modal-title-lg">
-         <Modal.Body>
-         <AlertPanel type="success" text="Event was saved succesfully!" glyph="ok-sign" />
-          <Button bsStyle="info" onClick={this.closeModal}>OK</Button>
-         </Modal.Body>
-       </Modal>
         {this.state.role !== "admin" ? (
           <AlertPanel type="danger" text="You need to be an admin to see this!" glyph="exclamation-sign" />
         ) : (
@@ -90,13 +91,16 @@ class GroupGenerator extends React.Component {
                 <div className="col-md-3">
                  <Nav bsStyle="pills" stacked>
                   <NavItem eventKey="first">
-                    User Information
+                    User's Names
                   </NavItem>
                   <NavItem eventKey="second">
-                    Participants
+                    User Roles and Group info
                   </NavItem>
                   <NavItem eventKey="third">
-                    Overview and saving
+                    Overview and generating
+                  </NavItem>
+                  <NavItem eventKey="fourth">
+                    Profile output
                   </NavItem>
                 </Nav>
                 </div>
@@ -106,10 +110,13 @@ class GroupGenerator extends React.Component {
                         <UserGroupInfo updateBasic={this.updateBasic} />
                       </Tab.Pane>
                       <Tab.Pane eventKey="second">
-                        <UserSelector updateBasic={this.updateBasic} />
+                        <UserGroupRoles updateBasic={this.updateBasic} />
                       </Tab.Pane>
                       <Tab.Pane eventKey="third">
-                        <Overview data={this.state.data} setEvent={this.setEvent} />
+                        <GenerateUsers data={this.state.data} setEvent={this.setEvent} fillSpots={3} isGenerating={this.state.isGenerating} generateUsers={this.generateUsers} />
+                      </Tab.Pane>
+                      <Tab.Pane eventKey="fourth">
+                        <ProfileOutput data={this.state.data} />
                       </Tab.Pane>
                     </Tab.Content>
                 </div>

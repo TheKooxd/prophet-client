@@ -15,7 +15,7 @@ class AdminEvent extends React.Component {
 
 constructor(props) {
     super(props)
-    this.state = {readyad: false, admin: false, verifyLoad: false}
+    this.state = {readyad: false, admin: false, verifyLoad: false, noReserved: false}
     this.getUsers = this.getUsers.bind(this)
     this.verify = this.verify.bind(this)
     this.removeByAttr = this.removeByAttr.bind(this)
@@ -38,6 +38,7 @@ removeByAttr(arr, attr, value){
  getUsers() {
  	this.data = new Array;
  	this.data = [];
+  this.reservedData = [];
   this.unverifiedData = new Array;
   this.unverifiedData = [];
  	this.props.participants.forEach(function(user, index){
@@ -54,7 +55,22 @@ removeByAttr(arr, attr, value){
 	    	}
 	    	this.data[index] = result
 	        if(index + 1 == this.props.participants.length) {
-	          this.setState({readyad: true})
+            if(this.props.reservedParticipants.length == 0) this.setState({readyad: true, noReserved: true})
+	          this.props.reservedParticipants.forEach(function(user, index){
+              fetch(config.api + '/getUser?id=' + user, {
+                credentials: 'same-origin'
+                })
+                .then((result2) => result2.json())
+                .then((result2) => {
+                  if(JSON.parse(result2.events).includes(this.props.eventId)) {
+                    this.reservedData[index] = result2
+                  }
+                  this.reservedData[index] = result2
+                    if(index + 1 == this.props.reservedParticipants.length) {
+                      this.setState({readyad: true})
+                    }
+                });
+             }.bind(this))
 	        }
 	    });
 	 }.bind(this))
@@ -88,6 +104,7 @@ removeByAttr(arr, attr, value){
   }
 
  render() {
+  console.log(this.reservedData)
  if(this.state.readyad == false || this.state.admin == false) return <div></div>
    return(
      <div>
@@ -99,6 +116,7 @@ removeByAttr(arr, attr, value){
       <div className="row">
         <div className="col-md-12">
           {moment(this.props.startTime) > moment() ? (
+            <div>
             <div className="col-md-12">
               People joined: 
             <Table condensed hover>
@@ -120,6 +138,32 @@ removeByAttr(arr, attr, value){
               </Table>
               <hr/>
               <AlertPanel type="info" text="Participant vertification is only aviable after the event has started." glyph="info-sign" />
+              </div>
+              <div className="col-md-12">
+              People in-line: 
+              {this.state.noReserved ? (
+              <AlertPanel type="info" glyph="info-sign" text="No users in-line." />
+              ) : (
+            <Table condensed hover>
+               <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Number of events</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {this.reservedData.map(function(data, index){
+                  return(
+                    <UserTable index={index} data={data} />
+                  );
+                }.bind(this))}
+               </tbody>
+              </Table>
+              )}
+              <hr/>
+              </div>
               </div>
           ) : (
             <div className="col-md-12">

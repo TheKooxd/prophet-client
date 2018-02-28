@@ -12,7 +12,6 @@ class UserVerified extends React.Component {
 
 constructor(props) {
     super(props)
-    console.log(props)
     this.state = {readyad: false}
     this.getEvents = this.getEvents.bind(this)
  }
@@ -28,7 +27,6 @@ constructor(props) {
 	    .then((result) => {
         result[0].verifier = event.verifier
 	    	this.data[index] = result
-        console.log(this.data[index])
 	      if(this.data.length == this.props.verifiedEvents.length) {
 	       this.setState({readyad: true})
 	       }

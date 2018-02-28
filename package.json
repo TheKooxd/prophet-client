@@ -39,6 +39,7 @@
   "dependencies": {
     "ajax": "0.0.4",
     "bootstrap": "^3.3.7",
+    "chart.js": "^1.1.1",
     "jquery": "^3.2.1",
     "node-fetch": "^1.6.3",
     "react-bootstrap": "^0.31.0",
@@ -46,6 +47,7 @@
     "react-collapsible": "^1.4.0",
     "react-datepicker": "^0.46.0",
     "react-dom": "^15.5.4",
+    "react-easy-chart": "^0.3.0",
     "react-history": "^0.18.2",
     "react-loading-spinner": "^1.0.12",
     "react-modal": "^1.7.7"
