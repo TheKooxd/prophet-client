@@ -35,7 +35,11 @@ class App extends Component {
 
   logout() {
     fetch(config.api + '/logout', {
-    credentials: 'same-origin'
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: 'PUT'
     })
     .then(function(response){
       this.setState({

@@ -99,8 +99,13 @@ class Event extends React.Component {
 
   deleteUserSend() {
   if(this.state.nameCheck) {
-    fetch(config.api + '/deleteUser?id=' + this.state.data._id, {
-    credentials: 'same-origin'
+    fetch(config.api + '/deleteUser', {
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: 'delete',
+    body: JSON.stringify({id: this.state.data._id})
     })
     .then((result) => result.text())
     .then((result) => {

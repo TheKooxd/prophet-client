@@ -63,8 +63,15 @@ class GlobalSettings extends React.Component {
   }
 
   saveChanges() {
-    fetch(config.api + '/changeSettings?settings=' + JSON.stringify(this.state.data), {
-      credentials: 'same-origin'
+    fetch(config.api + '/changeSettings', {
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PUT',
+      body: JSON.stringify({
+        "settings": JSON.stringify(this.state.data)
+      })
       })
       .then((result) => result.text())
       .then((result) => {

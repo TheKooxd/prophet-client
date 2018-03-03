@@ -47,8 +47,17 @@ class GroupGenerator extends React.Component {
 
   generateUsers() {
     this.setState({isGenerating: true})
-    fetch(config.api + '/generateGroup?names=' + JSON.stringify(this.state.data.names) + '&role=' + this.state.data.role + '&groupName=' + this.state.data.groupId, {
-    credentials: 'same-origin'
+    fetch(config.api + '/generateGroup', {
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "names": JSON.stringify(this.state.data.names), 
+      "role": this.state.data.role,
+      "groupName": this.state.data.groupId
+    })
     })
     .then((result) => result.json())
     .then((result) => {

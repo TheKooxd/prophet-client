@@ -24,8 +24,16 @@ class LoginPanel extends React.Component {
  }
 
   login() {
-    fetch(config.api + '/login?id=' + this.state.usrId + "&pass=" + this.state.pass, {
-    credentials: 'same-origin'
+    fetch(config.api + '/login', {
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: 'PUT',
+    body: JSON.stringify({
+      "id": this.state.usrId, 
+      "pass": this.state.pass
+    })
     })
   .then((resp) => resp.json())
   .then(function(res){
