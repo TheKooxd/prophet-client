@@ -120,6 +120,9 @@ class Event extends React.Component {
           {this.state.joinMessage == "removed without reserve" &&
           <AlertPanel glyph="info-sign" type="info" text="You are no longer participant of this event but there where no one in line to take your place." />
           }
+          {this.state.joinMessage == "removed from reserve" &&
+          <AlertPanel glyph="info-sign" type="info" text="You have been removed from the waiting line." />
+          }
           <Button bsStyle="info" onClick={this.closeModal}>OK</Button>
          </Modal.Body>
        </Modal>
