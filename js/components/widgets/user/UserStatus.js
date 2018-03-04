@@ -31,7 +31,7 @@ class UserStatus extends React.Component {
 
  getEvents() {
    this.setState( {response: false} )
-   fetch(config.api + '/getEvents', {
+   fetch(config.api + '/getEvents?onlyJoinable=true', {
    credentials: 'same-origin'
    })
    .then((result) => result.json())

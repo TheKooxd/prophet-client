@@ -13,6 +13,7 @@ class LogInModal extends React.Component {
     super(props)
     this.state = {
       showModal: this.props.modalIsOpen,
+      changePass: false
     };
     this.close = this.close.bind(this)
     this.handler = this.handler.bind(this)
@@ -27,8 +28,13 @@ class LogInModal extends React.Component {
       this.setState({ loginErr: true })
     }
     else {
-      this.setState({ showModal: false })
-      this.props.getUser(e);
+      if(e.usr.changePass){
+        this.setState({ changePass: true, loginErr: false })
+      }
+      else {
+        this.setState({ showModal: false })
+        this.props.getUser(e);
+      }
     }
   }
 
@@ -50,6 +56,12 @@ class LogInModal extends React.Component {
          <Modal.Header>
            <Modal.Title>Login to Prophet</Modal.Title>
          </Modal.Header>
+         {this.state.changePass ? (
+          <Modal.Body>
+           <AlertPanel type="info" glyph="info-sign" text="Because this is your first time login in, password change is required."/>
+           <LoginPanel handler = {this.handler} changePass={this.state.changePass} />
+          </Modal.Body>
+         ) : (
          <Modal.Body>
           {this.props.err == true &&
             <Alert bsStyle="info">
@@ -67,8 +79,9 @@ class LogInModal extends React.Component {
             </Alert>
           }
            <h4>Enter the credentials provided by your SRK:</h4>
-           <LoginPanel handler = {this.handler} />
+           <LoginPanel handler = {this.handler} changePass={this.state.changePass} />
          </Modal.Body>
+         )}
          <Modal.Footer>
          </Modal.Footer>
        </Modal>

@@ -7,6 +7,8 @@ import History from 'react-history/BrowserHistory';
 import { Push } from 'react-history/Actions';
 import moment from 'moment';
 
+import config from '../../../../config.json';
+
 class EventTable extends React.Component {
   static contextTypes = {
     router: PropTypes.object.isRequired
@@ -17,7 +19,16 @@ class EventTable extends React.Component {
   }
 
   handleClick() {
-    this.context.router.push('/event/' + this.props.data._id)
+    if(this.props.joinLink) {
+    fetch(config.api + '/joinEvent?id=' + this.props.data._id + '&usrId=' + this.props.usrId, {
+      credentials: 'same-origin'
+      })
+      .then((result2) => result2.text())
+      .then((result2) => {
+        this.props.joiningDone(result2);
+      })
+    }
+    else this.context.router.push('/event/' + this.props.data._id)
   }
 
   render() {

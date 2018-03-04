@@ -11,7 +11,7 @@ import './time-picker.less';
 class BasicInfo extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { nameValidation: undefined, name: "" , location: "", startTime: moment(), endTime: moment(), closes: moment()}
+    this.state = { nameValidation: undefined, name: "", info: "" , location: "", startTime: moment(), endTime: moment(), closes: moment(), type: "jumis"}
     this.handleChange = this.handleChange.bind(this)
     this.getValidationState = this.getValidationState.bind(this)
     this.startTimeChange = this.startTimeChange.bind(this)
@@ -34,7 +34,13 @@ class BasicInfo extends React.Component {
     if(e.target.id == "location") {
       this.setState({ location: e.target.value })
     }
-    this.props.updateBasic(e.target.id, e.target.value)
+    if(e.target.id == "type") {
+      this.setState({ type: e.target.value })
+    }
+    if(e.target.id == "info") {
+      this.setState({ info: e.target.value })
+    }
+    this.props.updateBasic(e.target.id, e.target.value, e.target.type)
   }
 
   startTimeChange(date) {
@@ -57,7 +63,6 @@ class BasicInfo extends React.Component {
     var temp = new Date(d[0][0], d[0][1], d[0][2], d[1][0], d[1][1])
     this.setState({endTime: temp})
     this.props.updateBasic("ends", temp)
-    console.log(this.state.endTime)
   }
 
   closesTimeChange(date) {
@@ -69,7 +74,6 @@ class BasicInfo extends React.Component {
     var temp = new Date(d[0][0], d[0][1], d[0][2], d[1][0], d[1][1])
     this.setState({closes: temp})
     this.props.updateBasic("closes", temp)
-    console.log(this.state.closes)
   }
 
   validateDate(e) {
@@ -94,6 +98,39 @@ class BasicInfo extends React.Component {
             />
             <FormControl.Feedback />
             <HelpBlock>Short and descriping name for this event (eg. "Jumalanpalvelus")</HelpBlock>
+          </FormGroup>
+          <FormGroup
+            controlId="info"
+          >
+            <ControlLabel>Event info</ControlLabel>
+            <FormControl
+              componentClass="textarea"
+              value={this.state.info}
+              onChange={this.handleChange}
+              placeholder="Enter text"
+            />
+            <FormControl.Feedback />
+            <HelpBlock>Longer description that can be longer. Used to catch participants.</HelpBlock>
+          </FormGroup>
+          <FormGroup
+            controlId="type"
+          >
+            <ControlLabel>Event Type</ControlLabel>
+              <FormControl
+                componentClass="select"
+                value={this.state.type}
+                onChange={this.handleChange}
+                placeholder="Select type..."
+              >
+              <option value="jumis">Jumalanpalvelus</option>
+              <option value="innostajat">Innostajat</option>
+              <option value="festarit">Festarit</option>
+              <option value="nuortenilta">Nuortenilta</option>
+              <option value="talkoot">Talkoot</option>
+              <option value="other">Muu seurakunnan toiminta</option>
+            </FormControl>
+            <FormControl.Feedback />
+            <HelpBlock>What kind of event is this? (eg. Nuortenilta, Innostajat, Jumis...)</HelpBlock>
           </FormGroup>
           <FormGroup
             controlId="location"
